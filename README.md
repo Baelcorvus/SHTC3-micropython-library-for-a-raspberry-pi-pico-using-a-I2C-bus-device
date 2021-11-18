@@ -8,7 +8,7 @@ https://github.com/Baelcorvus/I2C_Busdevice
 The repository includes a version of the I2C bus device, the driver for the sensor and a couple of examples.
 First you need to copy the files `shtc3.py` and `I2C_bus_device.py` from the repository to the default directory of you pico device.
 
-To use call the object with the i2C bus to use and the address of the sensor.
+To use call the object with the I2C bus to use and the address of the sensor.
 If no address is given the default of 0x29 is used.
 
 To use the device, first you must import the library:
@@ -41,7 +41,7 @@ As the temperature value is used in the relative humidity calculation both value
         temperature, humidity = sht.measurements
 ```
 
-An example program is included that simply reads and prints these values (TSL_example.py) and one that shows how you 
+An example program is included that simply reads and prints these values (SHTC3_example.py) and one that shows how you 
 can integrate the sensor with other I2C bus devices.
 
 ```python
@@ -92,3 +92,37 @@ while True:
 ```
 
 The other example is a simple program that incorportates this code into a multiple sensor situation.
+
+***A note on I/O errors***
+if an I/O error occuse durig either intialisation of the object or during a read of the sensor you can use `try:` and `except OSError:` 
+to catch it and deal with it.
+So, during intialisation we use:
+```python
+try:
+    sht = shtc3.SHTC3(i2c, sht_addr)
+    chip_id = sht._chip_id
+    if (chip_id == 0x807):
+        identifier = "SHTC3"
+    else:
+        identifier = "other sensor"
+except OSError:
+    print ("SHTC3 not present")
+    sht_attached = False
+else:
+    print('{} is present'.format(identifier))
+```
+The bus device responds with an error if no device is present with the address specified. If it finds a device at the address then you can read the chip id from the SHTC3
+with `sht._chip_id`. A SHTC3 will respond with 0x807
+
+Once we hace established a SHTC3 device is present, future read and writes should occur without error, but in the case of a line dropping you can catch an error on a read:
+```python
+try:
+    temperature, humidity = sht.measurements         #read both temperature and humidity at the same time. 
+    print("temperature: {}  Relative_humidity {}  ".format(temperature, humidity), end = '\r')
+except OSError:      #if we get an error during I/O retry the connection
+    temperature = 0
+    humidity = 0
+    print("SHTC3 I/O Error - retrying connection")
+```
+Here if we get an I/O error reading the sensor we set the temperature and relative humidity values to 0 and complain about it. On the next loop the program will attempt to
+read the device again.
