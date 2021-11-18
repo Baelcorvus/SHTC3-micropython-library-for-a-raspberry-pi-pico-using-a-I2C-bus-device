@@ -43,7 +43,7 @@ _SHTC3_CHIP_ID = 0x807
 
 
 class SHTC3:
-        """SHTC3 - Temperature & Humidity Sensor.
+    '''SHTC3 - Temperature & Humidity Sensor.
     to use call the object with the i2C bus to use and the address of the sensor.
     If no address is given the default of 0x70 is used.
 
@@ -76,7 +76,7 @@ class SHTC3:
     
         temperature, humidity = sht..measurements
 
-    """
+    '''
     def __init__(self, i2c, sht_addr = _SHTC3_DEFAULT_ADDR):
         self.device = I2CDevice(i2c, sht_addr)
         self._buffer = bytearray(6)
@@ -84,11 +84,6 @@ class SHTC3:
         self.sleeping = False
         self.reset()
         self._chip_id = self._get_chip_id()
-        if (self.device.i2c_error == -2):
-            return
-        if self._chip_id != _SHTC3_CHIP_ID:
-            self.device.i2c_error = -3
-            self.device.i2c_error_device = sht_addr
         
     def _write_command(self, command):
         """helper function to write a command to the i2c device"""

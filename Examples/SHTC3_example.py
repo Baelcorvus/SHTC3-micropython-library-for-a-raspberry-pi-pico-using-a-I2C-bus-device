@@ -1,4 +1,4 @@
-`'''
+'''
 Code to use a SHTC3 - Temperature & Humidity Sensor with a pico microcontroller
 in micropython using an I2C bus device.
 '''
