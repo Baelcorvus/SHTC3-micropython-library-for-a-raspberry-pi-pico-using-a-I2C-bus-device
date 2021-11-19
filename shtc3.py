@@ -58,7 +58,7 @@ class SHTC3:
         sdaPIN=machine.Pin(0)
         sclPIN=machine.Pin(1)
         i2c_bus = 0
-        addr = 0x29
+        addr = 0x70
 
         i2c=machine.I2C(i2c_bus, sda=sdaPIN, scl=sclPIN, freq=400000)
     
